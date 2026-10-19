@@ -9,6 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -19,11 +20,11 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install Android SDK
-        run: sdkmanager "platforms;android-29" "build-tools;29.0.3"
+      - name: Configure Android SDK
+        run: |
+          echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> "$GITHUB_ENV"
+          yes | sdkmanager --licenses > /dev/null || true
+          sdkmanager --install "platforms;android-29" "build-tools;29.0.3"
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -38,3 +39,5 @@ jobs:
         with:
           name: TESECO-Logo-APK
           path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+
